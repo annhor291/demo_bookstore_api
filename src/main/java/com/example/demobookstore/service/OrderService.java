@@ -26,6 +26,38 @@ public class OrderService {
     private final BookRepository bookRepository;
     private final CustomerRepository customerRepository;
 
+    // Chỉ dùng cho getAll() - không gọi orderDetail()
+    private OrderResponseDTO toSummaryDTO(Order order) {
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setId(order.getId());
+        dto.setCustomerName(order.getCustomer().getName());
+        dto.setTotalAmount(order.getTotalAmount());
+        // Không set items → không trigger lazy load
+        return dto;
+    }
+
+    private OrderResponseDTO toDTO(Order order) {
+
+        OrderResponseDTO dto = new OrderResponseDTO();
+        dto.setId(order.getId());
+        dto.setCustomerName(order.getCustomer().getName());
+        dto.setTotalAmount(order.getTotalAmount());
+
+        List<OrderDetailDTO> items = order.getOrderDetail()
+                .stream()
+                .map(d -> {
+                    OrderDetailDTO item = new OrderDetailDTO();
+                    item.setBookName(d.getBook().getTitle());
+                    item.setQuantity(d.getQuantity());
+                    item.setPrice(d.getPrice());
+                    return item;
+                })
+                .toList();
+
+        dto.setItems(items);
+        return dto;
+    }
+
     public OrderRequestDTO create(OrderRequestDTO dto) {
 
         Customer customer = customerRepository.findById(dto.getCustomerId())
@@ -67,33 +99,12 @@ public class OrderService {
         return result;
     }
 
-    private OrderResponseDTO toDTO(Order order) {
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setId(order.getId());
-        dto.setCustomerName(order.getCustomer().getName());
-        dto.setTotalAmount(order.getTotalAmount());
-
-        List<OrderDetailDTO> items = order.getOrderDetail()
-                .stream()
-                .map(d -> {
-                    OrderDetailDTO item = new OrderDetailDTO();
-                    item.setBookName(d.getBook().getTitle());
-                    item.setQuantity(d.getQuantity());
-                    item.setPrice(d.getPrice());
-                    return item;
-                })
-                .toList();
-
-        dto.setItems(items);
-
-        return dto;
-    }
 
     public List<OrderResponseDTO> getAll() {
         return orderRepository.findAll()
                 .stream()
-                .map(this::toDTO)
+                .map(this::toSummaryDTO)
                 .toList();
     }
 

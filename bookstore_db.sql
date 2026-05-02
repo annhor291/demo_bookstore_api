@@ -22,8 +22,8 @@ create table customer(
 
 create table orders(
    id bigint auto_increment primary key,
-   orders_date datetime,
-   total_amount double,
+   ordersDate datetime,
+   totalAmount double,
    customer_id bigint,
    
    constraint fk_customer
@@ -32,8 +32,10 @@ create table orders(
    on delete cascade
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+ALTER TABLE orders CHANGE ordersDate orders_date DATETIME;
+ALTER TABLE orders CHANGE totalAmount total_amount double;
 
-create table order_detail(
+create table orderDetail(
    id bigint auto_increment primary key,
    quantity int,
    price double,
@@ -64,9 +66,10 @@ INSERT INTO customer (name, email, phone) VALUES
 ('Binh', 'binh@gmail.com', '0456'),
 ('Cuong', 'cuong@gmail.com', '0789');
 
-INSERT INTO orders (orders_date, total_amount, customer_id) VALUES
+INSERT INTO orders (ordersDate, totalAmount, customer_id) VALUES
 (NOW(), 300, 2),
 (NOW(), 200, 3);
+
 
 INSERT INTO orderDetail (quantity, price, book_id, order_id) VALUES
 (2, 100, 1, 3),
@@ -75,3 +78,13 @@ INSERT INTO orderDetail (quantity, price, book_id, order_id) VALUES
 
 select * from customer;
 select * from orders;
+SELECT * FROM orderDetail WHERE order_id = 3;
+
+DESCRIBE orders;
+
+SELECT *
+FROM orders o
+LEFT JOIN orderDetail od ON o.id = od.order_id
+WHERE o.id = 3;
+
+RENAME TABLE orderDetail TO order_detail;
