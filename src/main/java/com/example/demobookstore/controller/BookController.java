@@ -1,8 +1,8 @@
 package com.example.demobookstore.controller;
 
 import com.example.demobookstore.dto.BookDTO;
-import com.example.demobookstore.entity.Book;
 import com.example.demobookstore.service.BookService;
+import com.example.demobookstore.service.impl.BookServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,6 +45,7 @@ public class BookController {
     @PutMapping("/{id}")
     public BookDTO update(@PathVariable Long id,
                           @RequestBody BookDTO dto) {
+
         return bookService.update(id, dto);
     }
 

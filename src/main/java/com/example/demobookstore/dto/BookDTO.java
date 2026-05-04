@@ -14,9 +14,9 @@ public class BookDTO {
     private String author;
 
     @Min(value = 1, message = "Price must > 0")
-    private double price;
+    private Double price;
 
-    private int quantity;
+    private Integer quantity;
 
     private String category;
 }
