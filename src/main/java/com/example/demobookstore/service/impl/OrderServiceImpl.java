@@ -1,13 +1,11 @@
 package com.example.demobookstore.service.impl;
 
-import com.example.demobookstore.dto.OrderRequestDTO;
-import com.example.demobookstore.dto.OrderDetailDTO;
-import com.example.demobookstore.dto.OrderItemDTO;
-import com.example.demobookstore.dto.OrderResponseDTO;
+import com.example.demobookstore.dto.*;
 import com.example.demobookstore.entity.Book;
 import com.example.demobookstore.entity.Customer;
 import com.example.demobookstore.entity.Order;
 import com.example.demobookstore.entity.OrderDetail;
+import com.example.demobookstore.projection.CustomerOrderProjection;
 import com.example.demobookstore.repository.BookRepository;
 import com.example.demobookstore.repository.CustomerRepository;
 import com.example.demobookstore.repository.OrderRepository;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,6 +118,23 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("DETAIL SIZE = " + order.getOrderDetail().size());
 
             return toDTO(order);
+    }
+
+    @Override
+    public List<CustomerOrderResponseDTO> getOrdersByCustomerId(Long customerId) {
+        List<CustomerOrderProjection> orders =
+                orderRepository.findOrdersByCustomerId(customerId);
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+        return orders.stream()
+                .map(order -> new CustomerOrderResponseDTO(
+                        order.getId(),
+                        order.getTotalAmount(),
+                        order.getOrdersDate().format(formatter)
+                ))
+                .toList();
     }
 
 

@@ -1,7 +1,9 @@
 package com.example.demobookstore.service.impl;
 
 import com.example.demobookstore.dto.CustomerDTO;
+import com.example.demobookstore.dto.CustomerSearchResponseDTO;
 import com.example.demobookstore.entity.Customer;
+import com.example.demobookstore.projection.CustomerSearchProjection;
 import com.example.demobookstore.repository.CustomerRepository;
 import com.example.demobookstore.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceIpml implements CustomerService {
+public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     // mapping dto <-> entity
@@ -84,5 +86,18 @@ public class CustomerServiceIpml implements CustomerService {
             customerRepository.deleteById(id);
     }
 
+    @Override
+    public List<CustomerSearchResponseDTO> searchCustomerByName(String name) {
+        List<CustomerSearchProjection> customers =
+                customerRepository.searchCustomerByName(name);
+
+        return customers.stream()
+                .map(customer -> new CustomerSearchResponseDTO(
+                        customer.getId(),
+                        customer.getName(),
+                        customer.getEmail()
+                ))
+                .toList();
+    }
 
 }
